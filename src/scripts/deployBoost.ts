@@ -44,21 +44,20 @@ async function main() {
     console.log("Budget manager:", await budget.owner());
 
     // Original bytes4 selector
-    
     const bytes4Selector = keccak256(stringToHex("event Swap (address sender, address recipient, int256 amount0, int256 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick)")).slice(0, 10) as `0x${string}`
 
     // Convert to bytes32 by padding with zeros
     const bytes32Selector = bytes4Selector.padEnd(66, '0') as `0x${string}`
 
-    const actionStepMint: ActionStep = {
+    const actionStepSwap: ActionStep = {
         chainid: 84533,
         signature: bytes32Selector, 
         signatureType: SignatureType.EVENT, 
-        targetContract: CLANKER_POOL_ADDRESS as `0x${string}`, 
+        targetContract: CLANKER_POOL_ADDRESS as `0x${string}`,        
         actionParameter: {
             filterType: FilterType.LESS_THAN_OR_EQUAL,
             fieldType: PrimitiveType.UINT,
-            fieldIndex: 2, // The 'amount' parameter is the first (and only) parameter
+            fieldIndex: 2, // The amount0 parameter is the third parameter
             filterData: toHex(0), 
         }
       };
@@ -67,15 +66,17 @@ async function main() {
         actionClaimant: {
           signatureType: SignatureType.EVENT,
           signature: bytes32Selector,
-          fieldIndex: 0,
+          fieldIndex: 1, // The 'recipient' parameter is the second parameter
           targetContract: CLANKER_POOL_ADDRESS as `0x${string}`,
-          chainid: 84532,
+          chainid: 84533,
         },
-        actionSteps: [actionStepMint]
+        actionSteps: [actionStepSwap]
       };
-      
+
+    console.log("action steps:", actionStepSwap);
     const eventAction = core.EventAction(functionActionPayload);
-    
+    console.log("event action:", eventAction);
+
     try {
         // Deploy the boost
         // Who is calling this?
@@ -86,7 +87,7 @@ async function main() {
             incentives: [
                 core.ERC20Incentive({
                   asset: USDC_ADDRESS,
-                  reward: parseUnits("1", 6),
+                  reward: parseUnits("0.01", 6),
                   limit: BigInt(2),
                   strategy: StrategyType.POOL,
                   manager: budget.assertValidAddress(),
@@ -96,7 +97,8 @@ async function main() {
             chainId: 84533
         });
 
-        console.log("Boost deployed successfully!", boost.id);
+        console.log("Boost deployed successfully!", boost);
+        console.log("Boost id:", boost.id);
     } catch (error) {
         console.error("Error deploying boost:", error);
     }
