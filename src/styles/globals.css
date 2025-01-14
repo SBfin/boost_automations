@@ -1,16 +1,13 @@
-html,
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  background: #14092F;
+  color: white;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-* {
-  box-sizing: border-box;
+/* Optional: Add a subtle gradient overlay to the background */
+.bg-gradient-overlay {
+  background: radial-gradient(circle at top right, rgba(88, 28, 135, 0.15), transparent);
 }
