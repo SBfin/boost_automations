@@ -28,6 +28,7 @@ const core = new BoostCore({
 const BUDGET_ADDRESS = "0x26694b52b68502809938d2fd14385498bf7d7f65";
 const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 const CLANKER_POOL_ADDRESS = "0x8277cf39532d28739be584c5eea1f010c50b8c7f";
+const CHAIN_ID = 8453;
 
 async function main() {
     console.log("Deploying boost...");
@@ -50,7 +51,7 @@ async function main() {
     const bytes32Selector = bytes4Selector.padEnd(66, '0') as `0x${string}`
 
     const actionStepSwap: ActionStep = {
-        chainid: 84533,
+        chainid: CHAIN_ID,
         signature: bytes32Selector, 
         signatureType: SignatureType.EVENT, 
         targetContract: CLANKER_POOL_ADDRESS as `0x${string}`,        
@@ -68,7 +69,7 @@ async function main() {
           signature: bytes32Selector,
           fieldIndex: 1, // The 'recipient' parameter is the second parameter
           targetContract: CLANKER_POOL_ADDRESS as `0x${string}`,
-          chainid: 84533,
+          chainid: CHAIN_ID,
         },
         actionSteps: [actionStepSwap]
       };
@@ -94,7 +95,7 @@ async function main() {
                 }),
             ],
         }, {
-            chainId: 84533
+            chainId: CHAIN_ID
         });
 
         console.log("Boost deployed successfully!", boost);
