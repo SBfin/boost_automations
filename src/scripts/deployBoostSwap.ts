@@ -11,6 +11,8 @@ import {
     FilterType,
     PrimitiveType
   } from '@boostxyz/sdk';
+import { parseAbiItem } from 'viem';
+import { pad } from 'viem/utils';
 
 const account = {
   privateKey: process.env.PRIVATE_KEY as `0x${string}`,
@@ -50,9 +52,13 @@ async function main() {
     // Convert to bytes32 by padding with zeros
     const bytes32Selector = bytes4Selector.padEnd(66, '0') as `0x${string}`
 
+    // const signature = pad("0x4b8c8341");
+    // 0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67
+    const signature = "0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67" as `0x${string}`;
+
     const actionStepSwap: ActionStep = {
         chainid: CHAIN_ID,
-        signature: bytes32Selector, 
+        signature: signature, 
         signatureType: SignatureType.EVENT, 
         targetContract: CLANKER_POOL_ADDRESS as `0x${string}`,        
         actionParameter: {
@@ -66,7 +72,7 @@ async function main() {
     const functionActionPayload = {
         actionClaimant: {
           signatureType: SignatureType.EVENT,
-          signature: bytes32Selector,
+          signature: signature,
           fieldIndex: 1, // The 'recipient' parameter is the second parameter
           targetContract: CLANKER_POOL_ADDRESS as `0x${string}`,
           chainid: CHAIN_ID,
@@ -80,7 +86,6 @@ async function main() {
 
     try {
         // Deploy the boost
-        // Who is calling this?
         const boost = await core.createBoost({
             maxParticipants: BigInt(10),
             budget: budget,
